@@ -19,11 +19,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
             DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
             DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
             DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+            DcMotor launcher = hardwareMap.get(DcMotor.class, "launcher");
 
             frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
             backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
             frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
             backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+            launcher.setDirection(DcMotor.Direction.FORWARD);
 
             // Wait for the game to start (driver presses START)
             telemetry.addData("Status", "Initialized");
@@ -67,6 +69,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
                 frontRightDrive.setPower(frontRightPower);
                 backLeftDrive.setPower(backLeftPower);
                 backRightDrive.setPower(backRightPower);
+
+                // Toggle the launcher
+                if (gamepad1.a) {
+                    launcher.setPower(0.1);
+                } else {
+                    launcher.setPower(0.0);
+                }
 
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
