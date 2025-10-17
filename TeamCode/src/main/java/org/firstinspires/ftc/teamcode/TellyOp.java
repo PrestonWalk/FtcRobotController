@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
             waitForStart();
             runtime.reset();
 
+            double launcherPower = 0.0;
             // run until the end of the match (driver presses STOP)
             while (opModeIsActive()) {
                 double max;
@@ -71,11 +72,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
                 backRightDrive.setPower(backRightPower);
 
                 // Toggle the launcher
-                if (gamepad1.a) {
-                    launcher.setPower(0.1);
-                } else {
-                    launcher.setPower(0.0);
+                if (gamepad1.a && launcherPower < 0.5) {
+                    launcherPower += 0.05;
+                } else if(gamepad1.b && launcherPower >= 0.05) {
+                    launcherPower -= 0.05;
+
                 }
+                launcher.setPower(launcherPower);
 
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
