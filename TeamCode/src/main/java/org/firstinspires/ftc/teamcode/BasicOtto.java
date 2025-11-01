@@ -48,7 +48,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 /*
- * This file includes an autonomous file for the goBILDA® StarterBot for the
+ * This file includes an autonomous file for the goBIL  DA® StarterBot for the
  * 2025-2026 FIRST® Tech Challenge season DECODE™. It leverages a differential/Skid-Steer
  * system for robot mobility, one high-speed motor driving two "launcher wheels," and two servos
  * which feed that launcher.
@@ -363,7 +363,7 @@ public class BasicOtto extends OpMode
                 break;
 
             case DRIVING_OFF_LINE:
-                if(drive(DRIVE_SPEED, 26, DistanceUnit.INCH, 1)){
+                if(drive(DRIVE_SPEED, -26, DistanceUnit.INCH, 1)){
                     autonomousState = AutonomousState.COMPLETE;
                 }
                 break;
