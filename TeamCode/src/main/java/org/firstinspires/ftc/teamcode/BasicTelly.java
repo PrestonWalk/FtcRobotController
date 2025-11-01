@@ -61,7 +61,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "StarterBotTeleop", group = "StarterBot")
 //@Disabled
 public class BasicTelly extends OpMode {
-    final double FEED_TIME_SECONDS = 0.30; //The feeder servos run this long when a shot is requested.
+    final double FEED_TIME_SECONDS = 0.40; //The feeder servos run this long when a shot is requested.
     final double STOP_SPEED = 0.0; //We send this power to the servos when we want them to stop.
     final double FULL_SPEED = 1.0;
 
@@ -246,8 +246,8 @@ public class BasicTelly extends OpMode {
         /*
          * Send calculated power to wheels
          */
-        leftDrive.setPower(leftPower);
-        rightDrive.setPower(rightPower);
+        leftDrive.setPower(leftPower * 0.5);
+        rightDrive.setPower(rightPower * 0.5);
     }
 
     void launch(boolean shotRequested) {

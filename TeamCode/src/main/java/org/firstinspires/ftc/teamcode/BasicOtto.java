@@ -67,7 +67,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class BasicOtto extends OpMode
 {
 
-    final double FEED_TIME = 0.30; //The feeder servos run this long when a shot is requested.
+    final double FEED_TIME = 0.40; //The feeder servos run this long when a shot is requested.
 
     /*
      * When we control our launcher motor, we are using encoders. These allow the control system
