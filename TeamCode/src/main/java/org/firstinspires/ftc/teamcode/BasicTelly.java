@@ -246,8 +246,8 @@ public class BasicTelly extends OpMode {
         /*
          * Send calculated power to wheels
          */
-        leftDrive.setPower(leftPower * 0.5);
-        rightDrive.setPower(rightPower * 0.5);
+        leftDrive.setPower(leftPower * 0.7);
+        rightDrive.setPower(rightPower * 0.7);
     }
 
     void launch(boolean shotRequested) {
