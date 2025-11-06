@@ -48,7 +48,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 /*
- * This file includes an autonomous file for the goBIL  DA® StarterBot for the
+ * This file includes an autonomous file for the goBILDA® StarterBot for the
  * 2025-2026 FIRST® Tech Challenge season DECODE™. It leverages a differential/Skid-Steer
  * system for robot mobility, one high-speed motor driving two "launcher wheels," and two servos
  * which feed that launcher.
@@ -67,7 +67,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class BasicOtto extends OpMode
 {
 
-    final double FEED_TIME = 0.40; //The feeder servos run this long when a shot is requested.
+    final double FEED_TIME = 0.20; //The feeder servos run this long when a shot is requested.
 
     /*
      * When we control our launcher motor, we are using encoders. These allow the control system
