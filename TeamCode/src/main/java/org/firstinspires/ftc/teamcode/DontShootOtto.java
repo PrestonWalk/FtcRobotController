@@ -62,9 +62,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * main robot "loop," continuously checking for conditions that allow us to move to the next step.
  */
 
-@Autonomous(name="BasicOtto", group="StarterBot")
+@Autonomous(name="DontShootOtto", group="StarterBot")
 //@Disabled
-public class BasicOtto extends OpMode
+public class DontShootOtto extends OpMode
 {
 
     final double FEED_TIME = 0.40; //The feeder servos run this long when a shot is requested.
@@ -100,7 +100,7 @@ public class BasicOtto extends OpMode
     final double TICKS_PER_MM = (ENCODER_TICKS_PER_REV / (WHEEL_DIAMETER_MM * Math.PI));
     final double TRACK_WIDTH_MM = 404;
 
-    int shotsToFire = 3; //The number of shots to fire in this auto.
+    int shotsToFire = 0; //The number of shots to fire in this auto.
     // TODO: When making changes, copy all code into `DontMoveOtto` and change this to 0.
 
     /*
