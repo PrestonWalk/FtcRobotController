@@ -285,7 +285,7 @@ public class DontShootOtto extends OpMode
              * allowing it to cycle through and continue the process of launching the first ball.
              */
             case LAUNCH:
-                if(shotsToFire == 0) {
+                if (shotsToFire == 0) {
                     autonomousState = AutonomousState.DRIVING_AWAY_FROM_GOAL;
                     break;
                 }
@@ -326,7 +326,7 @@ public class DontShootOtto extends OpMode
                  * the robot has been within a tolerance of the target position for "holdSeconds."
                  * Once the function returns "true" we reset the encoders again and move on.
                  */
-                if (drive(DRIVE_SPEED, 4, DistanceUnit.INCH, 1)) {
+                if (drive(DRIVE_SPEED, -8, DistanceUnit.INCH, 1)) {
                     frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -427,8 +427,8 @@ public class DontShootOtto extends OpMode
 
         frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         frontLeftDrive.setPower(speed);
         frontRightDrive.setPower(speed);
@@ -443,57 +443,6 @@ public class DontShootOtto extends OpMode
          * holdSeconds variable.
          */
         if(Math.abs(targetPosition - frontLeftDrive.getCurrentPosition()) > (TOLERANCE_MM * TICKS_PER_MM)){
-            driveTimer.reset();
-        }
-
-        return (driveTimer.seconds() > holdSeconds);
-    }
-
-    /**
-     * @param speed From 0-1
-     * @param angle the amount that the robot should rotate
-     * @param angleUnit the unit that angle is in
-     * @param holdSeconds the number of seconds to wait at position before returning true.
-     * @return True if the motors are within tolerance of the target position for more than
-     *         holdSeconds. False otherwise.
-     */
-    boolean rotate(double speed, double angle, AngleUnit angleUnit, double holdSeconds){
-        final double TOLERANCE_MM = 10;
-
-        /*
-         * Here we establish the number of mm that our drive wheels need to cover to create the
-         * requested angle. We use radians here because it makes the math much easier.
-         * Our robot will have rotated one radian when the wheels of the robot have driven
-         * 1/2 of the track width of our robot in a circle. This is also the radius of the circle
-         * that the robot tracks when it is rotating. So, to find the number of mm that our wheels
-         * need to travel, we just need to multiply the requested angle in radians by the radius
-         * of our turning circle.
-         */
-        double targetMm = angleUnit.toRadians(angle)*(TRACK_WIDTH_MM/2);
-
-        /*
-         * We need to set the left motor to the inverse of the target so that we rotate instead
-         * of driving straight.
-         */
-        double leftTargetPosition = -(targetMm*TICKS_PER_MM);
-        double rightTargetPosition = targetMm*TICKS_PER_MM;
-
-        frontLeftDrive.setTargetPosition((int) leftTargetPosition);
-        frontRightDrive.setTargetPosition((int) rightTargetPosition);
-        backLeftDrive.setTargetPosition((int) leftTargetPosition);
-        backRightDrive.setTargetPosition((int) rightTargetPosition);
-
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        frontLeftDrive.setPower(speed);
-        frontRightDrive.setPower(speed);
-        backLeftDrive.setPower(speed);
-        backRightDrive.setPower(speed);
-
-        if((Math.abs(leftTargetPosition - frontLeftDrive.getCurrentPosition())) > (TOLERANCE_MM * TICKS_PER_MM)){
             driveTimer.reset();
         }
 

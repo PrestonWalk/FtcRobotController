@@ -216,7 +216,7 @@ public class BasicTelly extends OpMode {
          * more complex maneuvers.
          * Note: this entire comment is irrelevant now
          */
-        mecaDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x);
+        mecaDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x);
 
         /*
          * Here we give the user control of the speed of the launcher motor without automatically
