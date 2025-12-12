@@ -95,8 +95,8 @@ public class BasicOtto extends OpMode
      * travel to create a specified rotation of the robot.
      */
     final double DRIVE_SPEED = 0.5;
-    final double WHEEL_DIAMETER_MM = 96;
-    final double ENCODER_TICKS_PER_REV = 537.7;
+    final double WHEEL_DIAMETER_MM = 96; // this one is probably wrong but whatever
+    final double ENCODER_TICKS_PER_REV = 537.7; // same
     final double TICKS_PER_MM = (ENCODER_TICKS_PER_REV / (WHEEL_DIAMETER_MM * Math.PI));
     final double TRACK_WIDTH_MM = 404;
 

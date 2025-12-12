@@ -176,7 +176,7 @@ public class BasicTelly extends OpMode {
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
 
         /*
-         * Much like our drivetrain motors, we set the left feeder servo to reverse so that they
+         * Much like our drivetrain motors, we set the right feeder servo to reverse so that they
          * both work to feed the ball into the robot.
          */
         rightFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
