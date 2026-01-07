@@ -113,6 +113,7 @@ public class BasicTelly extends OpMode {
     // Setup a variable for each drive wheel to save power level for telemetry
     double leftPower;
     double rightPower;
+    boolean goingSlow;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -227,7 +228,10 @@ public class BasicTelly extends OpMode {
         } else if (gamepad1.b) { // stop flywheel
             launcher.setVelocity(STOP_SPEED);
         }
-
+        // slow down toggle
+        if (gamepad1.xWasPressed()) {
+            goingSlow = !goingSlow; // flip it
+        }
         /*
          * Now we call our "Launch" function.
          */
@@ -255,11 +259,14 @@ public class BasicTelly extends OpMode {
         double backLeftPower   = axial - lateral + yaw;
         double backRightPower  = axial + lateral - yaw;
 
+        double speedFactor = 1.0;
+        if(goingSlow) { speedFactor = 0.2; }
+
         // Send calculated power to wheels
-        frontLeftDrive.setPower(frontLeftPower);
-        frontRightDrive.setPower(frontRightPower);
-        backLeftDrive.setPower(backLeftPower);
-        backRightDrive.setPower(backRightPower);
+        frontLeftDrive.setPower(frontLeftPower * speedFactor);
+        frontRightDrive.setPower(frontRightPower * speedFactor);
+        backLeftDrive.setPower(backLeftPower * speedFactor);
+        backRightDrive.setPower(backRightPower * speedFactor);
     }
 
     void launch(boolean shotRequested) {

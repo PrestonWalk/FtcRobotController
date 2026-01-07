@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * This file contains an example of a Linear "OpMode".
  */
 
-@Autonomous(name="Otto 0.0.1")
+@Autonomous(name="the real actual otto")
 @Disabled
 public class Otto extends LinearOpMode {
 
