@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name="the real actual telly")
@@ -13,6 +14,7 @@ public class TellyOp extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private final ElapsedTime runtime = new ElapsedTime();
+    private final int LAUNCH_TARGET_VEL = 900;
 
     @Override
     public void runOpMode() {
@@ -34,9 +36,9 @@ public class TellyOp extends LinearOpMode {
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
         launcher.setDirection(DcMotor.Direction.FORWARD);
-        intake.setDirection(DcMotor.Direction.FORWARD);
+        intake.setDirection(DcMotor.Direction.REVERSE);
         //leftLift.setDirection(DcMotor.Direction.REVERSE);
-        //rightLift.setDirection(DcMotor.Direction.FORWARD);
+        //rightLift.setDirection(DcMotor.Direction.REVERSE);
 
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -102,7 +104,7 @@ public class TellyOp extends LinearOpMode {
             // Launcher
             if(gamepad1.b || gamepad1.circle) flywheelRunning = true;
             else if(gamepad1.y || gamepad1.triangle) flywheelRunning = false;
-            if(flywheelRunning) launcher.setPower(Math.min(1.0, Math.max(0.0, 1.0 - 0.01 * (launcher.getVelocity() - 850))));
+            if(flywheelRunning) launcher.setPower(Math.min(1.0, Math.max(0.0, 1.0 - 0.01 * (launcher.getVelocity() - LAUNCH_TARGET_VEL))));
             else if(gamepad1.x || gamepad1.square) launcher.setPower(-1.0);
             else launcher.setPower(0.0);
             // Shoot!
@@ -111,7 +113,7 @@ public class TellyOp extends LinearOpMode {
                     // Step 1: Spin up the launcher
                     shotProgress = 1;
                     flywheelRunning = true; // Start the launcher if it isn't already
-                } else if(shotProgress == 1 && launcher.getVelocity() > 850) {
+                } else if(shotProgress == 1 && launcher.getVelocity() > LAUNCH_TARGET_VEL) {
                     // Step 2: Spin the intake and move the blocker
                     shotProgress = 2;
                     intake.setPower(1.0);
@@ -122,16 +124,21 @@ public class TellyOp extends LinearOpMode {
                 shotProgress = 0;
             }
             // Lift
-            /*if(gamepad2.a && !liftRunning) {
-                leftLift.setPower(1.0);
-                rightLift.setPower(1.0);
+            if(gamepad2.a && !liftRunning) {
+                //leftLift.setPower(1.0);
+                //rightLift.setPower(1.0);
+                liftStartedAt = runtime.milliseconds();
+                liftRunning = true;
+            } else if(gamepad2.b && !liftRunning) {
+                //leftLift.setPower(-1.0);
+                //rightLift.setPower(-1.0);
                 liftStartedAt = runtime.milliseconds();
                 liftRunning = true;
             }
             if(liftRunning && runtime.milliseconds() - liftStartedAt > 1000) { // stop the lift after a while
-                leftLift.setPower(0.0);
-                rightLift.setPower(0.0);
-            }*/
+                //leftLift.setPower(0.0);
+                //rightLift.setPower(0.0);
+            }
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime);

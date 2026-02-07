@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
-@Autonomous(name="the real actual RED otto")
+@Autonomous(name="the real actual RED CLOSE otto")
 //@Disabled
 public class RedOtto extends LinearOpMode {
 
@@ -16,6 +16,7 @@ public class RedOtto extends LinearOpMode {
     private DcMotorEx backLeftDrive;
     private DcMotorEx frontRightDrive;
     private DcMotorEx backRightDrive;
+    private DcMotorEx launcher;
     static final double COUNTS_PER_MOTOR_REV = 537.6; // eg: TETRIX Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing.
     static final double WHEEL_DIAMETER_INCHES = 4.0; // For figuring circumference
@@ -30,7 +31,7 @@ public class RedOtto extends LinearOpMode {
         backLeftDrive = hardwareMap.get(DcMotorEx.class, "back_left_drive");
         frontRightDrive = hardwareMap.get(DcMotorEx.class, "front_right_drive");
         backRightDrive = hardwareMap.get(DcMotorEx.class, "back_right_drive");
-        DcMotorEx launcher = hardwareMap.get(DcMotorEx.class, "launcher");
+        launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         CRServo blocker = hardwareMap.get(CRServo.class, "blocker");
         DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
 
@@ -39,7 +40,7 @@ public class RedOtto extends LinearOpMode {
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
         launcher.setDirection(DcMotor.Direction.FORWARD);
-        intake.setDirection(DcMotor.Direction.FORWARD);
+        intake.setDirection(DcMotor.Direction.REVERSE);
 
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -68,29 +69,53 @@ public class RedOtto extends LinearOpMode {
         double startedAt = 0;
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            if(flywheelRunning) launcher.setPower(Math.min(1.0, Math.max(0.0, 1.0 - 0.01 * (launcher.getVelocity() - 850))));
-            else launcher.setPower(0.0);
+            if(flywheelRunning) {
+                launcher.setPower(Math.min(1.0, Math.max(0.0, 1.0 - 0.01 * (launcher.getVelocity() - 900))));
+                telemetry.addData("Launcher's Speed", launcher.getVelocity());
+                telemetry.addData("Launcher's Power", launcher.getPower());
+            }
+            else launcher.setPower(-0.2);
             // Shoot!
             if(autoProgress == 0) {
-                startedAt = runtime.milliseconds();
+                encoderDrive(0.5, -20, 0, 0, 3, flywheelRunning);
                 autoProgress = 2;
-            } else if(autoProgress == 2 && launcher.getVelocity() > 850) {
+            } else if(autoProgress == 2 && launcher.getVelocity() > 900) {
                 // Step 1: Spin the intake and move the blocker
                 autoProgress = 3;
                 intake.setPower(1.0);
                 blocker.setPower(1.0);
                 startedAt = runtime.milliseconds();
-            } else if(autoProgress == 3 && (runtime.milliseconds() - startedAt) > 850) {
+            } else if(autoProgress == 3 && (runtime.milliseconds() - startedAt) > 4000) {
                 // Step 2: Stop after a while
                 intake.setPower(0.0);
                 blocker.setPower(0.0);
                 flywheelRunning = false;
-                autoProgress = 4;
                 startedAt = runtime.milliseconds();
-                encoderDrive(0.5, -10, 0, 10, 5);
-                encoderDrive(0.5, -10, 0, 0, 5);
-                encoderDrive(0.5, 0, (allianceIsRed ? -1 : 1) * 10, 0, 5);
-                encoderDrive(0.5, -10, 0, 0, 5);
+                encoderDrive(0.5, -15, 0, 0, 3, flywheelRunning);
+                encoderDrive(0.5, 0,0, (allianceIsRed ? 1 : -1) * 10, 3, flywheelRunning);
+                encoderDrive(0.5, 0, (allianceIsRed ? 1 : -1) * 15, 0, 3, flywheelRunning);
+                blocker.setPower(-0.4);
+                intake.setPower(0.7);
+                encoderDrive(0.5, 30, 0, 0, 3, flywheelRunning);
+                intake.setPower(0.0);
+                blocker.setPower(0.0);
+                flywheelRunning = true;
+                encoderDrive(0.5, -30, 0, 0, 3, flywheelRunning);
+                encoderDrive(0.5, 0, (allianceIsRed ? -1 : 1) * 15, 0, 3, flywheelRunning);
+                encoderDrive(0.5, 0, 0, (allianceIsRed ? -1 : 1) * 10, 3, flywheelRunning);
+                encoderDrive(0.5, 18, 0, 0, 3, flywheelRunning);
+                autoProgress = 4;
+            } else if(autoProgress == 4 && launcher.getVelocity() > 900) {
+                autoProgress = 5;
+                intake.setPower(1.0);
+                blocker.setPower(1.0);
+                startedAt = runtime.milliseconds();
+            } else if(autoProgress == 5 && (runtime.milliseconds() - startedAt) > 4000) {
+                autoProgress = 99999;
+                intake.setPower(0.0);
+                blocker.setPower(0.0);
+                flywheelRunning = false;
+                encoderDrive(0.5, -12, (allianceIsRed ? -1 : 1) * 12, 0, 3, flywheelRunning);
             }
 
             // Show the elapsed game time and wheel power.
@@ -98,7 +123,7 @@ public class RedOtto extends LinearOpMode {
             telemetry.update();
         }
     }
-    public void encoderDrive(double speed, double axial, double lateral, double yaw, double timeoutS) {
+    public void encoderDrive(double speed, double axial, double lateral, double yaw, double timeoutS, boolean fwRunning) {
         int newFLTarget;
         int newFRTarget;
         int newBLTarget;
@@ -109,9 +134,13 @@ public class RedOtto extends LinearOpMode {
 
             // Determine new target position, and pass to motor controller
             newFLTarget = frontLeftDrive.getCurrentPosition() + (int) ((axial + lateral + yaw) * COUNTS_PER_INCH);
-            newBLTarget = backLeftDrive.getCurrentPosition() + (int) ((axial - lateral - yaw) * COUNTS_PER_INCH);
-            newFRTarget = frontRightDrive.getCurrentPosition() + (int) ((axial - lateral + yaw) * COUNTS_PER_INCH);
+            newBLTarget = backLeftDrive.getCurrentPosition() + (int) ((axial - lateral + yaw) * COUNTS_PER_INCH);
+            newFRTarget = frontRightDrive.getCurrentPosition() + (int) ((axial - lateral - yaw) * COUNTS_PER_INCH);
             newBRTarget = backRightDrive.getCurrentPosition() + (int) ((axial + lateral - yaw) * COUNTS_PER_INCH);
+            //double frontLeftPower  = axial + lateral + yaw;
+            //            double frontRightPower = axial - lateral - yaw;
+            //            double backLeftPower   = axial - lateral + yaw;
+            //            double backRightPower  = axial + lateral - yaw;
             frontLeftDrive.setTargetPosition(newFLTarget);
             backLeftDrive.setTargetPosition(newBLTarget);
             frontRightDrive.setTargetPosition(newFRTarget);
@@ -136,8 +165,14 @@ public class RedOtto extends LinearOpMode {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (frontLeftDrive.isBusy() || frontRightDrive.isBusy() || backRightDrive.isBusy() || backLeftDrive.isBusy())) {
-                telemetry.addData("Working", "...");
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backRightDrive.isBusy() && backLeftDrive.isBusy())) {
+                telemetry.addData("Driving", "axial=" + axial + ", lateral=" + lateral + ", yaw=" + yaw);
+                if(fwRunning) {
+                    launcher.setPower(Math.min(1.0, Math.max(0.0, 1.0 - 0.01 * (launcher.getVelocity() - 900))));
+                    telemetry.addData("Launcher's Speed", launcher.getVelocity());
+                    telemetry.addData("Launcher's Power", launcher.getPower());
+                }
+                else launcher.setPower(-0.2);
                 telemetry.update();
             }
 
