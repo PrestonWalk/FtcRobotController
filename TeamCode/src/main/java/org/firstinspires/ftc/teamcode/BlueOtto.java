@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name="the real actual BLUE CLOSE otto")
 //@Disabled
@@ -12,6 +13,7 @@ public class BlueOtto extends LinearOpMode {
     // When making changes to the Otto, copy everything into the blue file, then change this.
     private final boolean allianceIsRed = false;
     private final ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime panicTime = new ElapsedTime();
     private DcMotorEx frontLeftDrive;
     private DcMotorEx backLeftDrive;
     private DcMotorEx frontRightDrive;
@@ -33,6 +35,7 @@ public class BlueOtto extends LinearOpMode {
         backRightDrive = hardwareMap.get(DcMotorEx.class, "back_right_drive");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         CRServo blocker = hardwareMap.get(CRServo.class, "blocker");
+        Servo blocker2 = hardwareMap.get(Servo.class, "the_real_blocker");
         DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -63,6 +66,7 @@ public class BlueOtto extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
+        panicTime.reset();
 
         int autoProgress = 0;
         boolean flywheelRunning = true;
@@ -74,48 +78,52 @@ public class BlueOtto extends LinearOpMode {
                 telemetry.addData("Launcher's Speed", launcher.getVelocity());
                 telemetry.addData("Launcher's Power", launcher.getPower());
             }
-            else launcher.setPower(-0.2);
+            else launcher.setPower(-0.4);
             // Shoot!
-            if(autoProgress == 0) {
-                encoderDrive(0.5, -20, 0, 0, 3, flywheelRunning);
+            if(panicTime.seconds() < 26 && autoProgress == 0) {
+                encoderDrive(0.6, -20, 0, 0, 3, flywheelRunning);
                 autoProgress = 2;
-            } else if(autoProgress == 2 && launcher.getVelocity() > 900) {
+            } else if(panicTime.seconds() < 26 && autoProgress == 2 && launcher.getVelocity() > 900) {
                 // Step 1: Spin the intake and move the blocker
                 autoProgress = 3;
                 intake.setPower(1.0);
                 blocker.setPower(1.0);
+                blocker2.setPosition(0.0);
                 startedAt = runtime.milliseconds();
-            } else if(autoProgress == 3 && (runtime.milliseconds() - startedAt) > 4000) {
+            } else if(panicTime.seconds() < 26 && autoProgress == 3 && (runtime.milliseconds() - startedAt) > 5000) {
                 // Step 2: Stop after a while
                 intake.setPower(0.0);
                 blocker.setPower(0.0);
+                blocker2.setPosition(0.8);
                 flywheelRunning = false;
                 startedAt = runtime.milliseconds();
-                encoderDrive(0.5, -15, 0, 0, 3, flywheelRunning);
-                encoderDrive(0.5, 0,0, (allianceIsRed ? 1 : -1) * 10, 3, flywheelRunning);
-                encoderDrive(0.5, 0, (allianceIsRed ? 1 : -1) * 15, 0, 3, flywheelRunning);
-                blocker.setPower(-0.4);
+                encoderDrive(0.6, -15, 0, 0, 3, flywheelRunning);
+                encoderDrive(0.6, 0,0, (allianceIsRed ? 1 : -1) * 10, 3, flywheelRunning);
+                encoderDrive(0.6, 0, (allianceIsRed ? 1 : -1) * 16, 0, 3, flywheelRunning);
+                blocker.setPower(-1.0);
                 intake.setPower(0.7);
-                encoderDrive(0.5, 30, 0, 0, 3, flywheelRunning);
+                encoderDrive(0.6, 33, 0, 0, 2, flywheelRunning);
                 intake.setPower(0.0);
                 blocker.setPower(0.0);
                 flywheelRunning = true;
-                encoderDrive(0.5, -30, 0, 0, 3, flywheelRunning);
-                encoderDrive(0.5, 0, (allianceIsRed ? -1 : 1) * 15, 0, 3, flywheelRunning);
-                encoderDrive(0.5, 0, 0, (allianceIsRed ? -1 : 1) * 10, 3, flywheelRunning);
-                encoderDrive(0.5, 18, 0, 0, 3, flywheelRunning);
+                encoderDrive(0.6, -33, 0, 0, 3, flywheelRunning);
+                encoderDrive(0.6, 0, (allianceIsRed ? -1 : 1) * 16, 0, 3, flywheelRunning);
+                encoderDrive(0.6, 0, 0, (allianceIsRed ? -1 : 1) * 10, 3, flywheelRunning);
+                encoderDrive(0.6, 18, 0, 0, 3, flywheelRunning);
                 autoProgress = 4;
-            } else if(autoProgress == 4 && launcher.getVelocity() > 900) {
+            } else if(panicTime.seconds() < 26 && autoProgress == 4 && launcher.getVelocity() > 900) {
                 autoProgress = 5;
                 intake.setPower(1.0);
                 blocker.setPower(1.0);
+                blocker2.setPosition(0.0);
                 startedAt = runtime.milliseconds();
-            } else if(autoProgress == 5 && (runtime.milliseconds() - startedAt) > 4000) {
+            } else if((panicTime.seconds() >= 26 && autoProgress < 100) || (autoProgress == 5 && (runtime.milliseconds() - startedAt) > 5000)) {
                 autoProgress = 99999;
                 intake.setPower(0.0);
                 blocker.setPower(0.0);
+                blocker2.setPosition(0.8);
                 flywheelRunning = false;
-                encoderDrive(0.5, -12, (allianceIsRed ? -1 : 1) * 12, 0, 3, flywheelRunning);
+                encoderDrive(0.6, -12, (allianceIsRed ? -1 : 1) * 12, 0, 3, flywheelRunning);
             }
 
             // Show the elapsed game time and wheel power.
@@ -165,14 +173,14 @@ public class BlueOtto extends LinearOpMode {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backRightDrive.isBusy() && backLeftDrive.isBusy())) {
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && (frontLeftDrive.isBusy() || frontRightDrive.isBusy() || backRightDrive.isBusy() || backLeftDrive.isBusy())) {
                 telemetry.addData("Driving", "axial=" + axial + ", lateral=" + lateral + ", yaw=" + yaw);
                 if(fwRunning) {
                     launcher.setPower(Math.min(1.0, Math.max(0.0, 1.0 - 0.01 * (launcher.getVelocity() - 900))));
                     telemetry.addData("Launcher's Speed", launcher.getVelocity());
                     telemetry.addData("Launcher's Power", launcher.getPower());
                 }
-                else launcher.setPower(-0.2);
+                else launcher.setPower(-0.4);
                 telemetry.update();
             }
 
