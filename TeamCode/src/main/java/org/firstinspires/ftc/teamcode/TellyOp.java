@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name="the real actual telly")
-//@Disabled
+@Disabled
 public class TellyOp extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -157,17 +157,17 @@ public class TellyOp extends LinearOpMode {
                 boolean leftMaxed = leftLift.getCurrentPosition() >= 5850;
                 boolean rightMaxed = rightLift.getCurrentPosition() >= 5850;
                 if (leftLift.getCurrentPosition() > rightLift.getCurrentPosition()) {
-                    leftLift.setPower(leftMaxed ? 0 : 0.5);
+                    leftLift.setPower(leftMaxed ? 0 : ((leftLift.getCurrentPosition() - rightLift.getCurrentPosition() > 300) ? 0.2 : 0.5));
                     rightLift.setPower(rightMaxed ? 0 : 0.7);
                 } else {
                     leftLift.setPower(leftMaxed ? 0 : 0.7);
-                    rightLift.setPower(rightMaxed ? 0 : 0.5);
+                    rightLift.setPower(rightMaxed ? 0 : ((rightLift.getCurrentPosition() - leftLift.getCurrentPosition() > 300) ? 0.2 : 0.5));
                 }
             } else if (liftRunningStep == 0 && (gamepad2.y || gamepad2.triangle)) {
                 leftLift.setPower(-0.5);
                 rightLift.setPower(-0.5);
             } else if (liftRunningStep == 0 && (gamepad2.a || gamepad2.cross) && (gamepad2.left_trigger > 0.7)) { // needs to be more pressed!
-                //doTheLift(0.3, 0.3);
+                //doTheLift(0.5, 1);
             } else if (gamepad2.dpad_up) {
                 liftRunningStep = 1;
             } else if (liftRunningStep == 1) {

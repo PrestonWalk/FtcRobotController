@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -7,13 +8,15 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name="the real actual BLUE CLOSE otto")
-//@Disabled
+@Disabled
 public class BlueOtto extends LinearOpMode {
 
     // When making changes to the Otto, copy everything into the blue file, then change this.
     private final boolean allianceIsRed = false;
     private final ElapsedTime runtime = new ElapsedTime();
     private final ElapsedTime panicTime = new ElapsedTime();
+    static final double PANIC_AT = 27.5;
+    static final double DRIVE_POWER = 0.65;
     private DcMotorEx frontLeftDrive;
     private DcMotorEx backLeftDrive;
     private DcMotorEx frontRightDrive;
@@ -80,8 +83,8 @@ public class BlueOtto extends LinearOpMode {
             }
             else launcher.setPower(-0.4);
             // Shoot!
-            if(panicTime.seconds() < 26 && autoProgress == 0) {
-                encoderDrive(0.6, -20, 0, 0, 3, flywheelRunning);
+            if(panicTime.seconds() < PANIC_AT && autoProgress == 0) {
+                encoderDrive(DRIVE_POWER, -20, 0, 0, 3, flywheelRunning);
                 autoProgress = 2;
             } else if(panicTime.seconds() < 26 && autoProgress == 2 && launcher.getVelocity() > 900) {
                 // Step 1: Spin the intake and move the blocker
@@ -90,40 +93,40 @@ public class BlueOtto extends LinearOpMode {
                 blocker.setPower(1.0);
                 blocker2.setPosition(0.0);
                 startedAt = runtime.milliseconds();
-            } else if(panicTime.seconds() < 26 && autoProgress == 3 && (runtime.milliseconds() - startedAt) > 5000) {
+            } else if(panicTime.seconds() < PANIC_AT && autoProgress == 3 && (runtime.milliseconds() - startedAt) > 5000) {
                 // Step 2: Stop after a while
                 intake.setPower(0.0);
                 blocker.setPower(0.0);
                 blocker2.setPosition(0.8);
                 flywheelRunning = false;
                 startedAt = runtime.milliseconds();
-                encoderDrive(0.6, -15, 0, 0, 3, flywheelRunning);
-                encoderDrive(0.6, 0,0, (allianceIsRed ? 1 : -1) * 10, 3, flywheelRunning);
-                encoderDrive(0.6, 0, (allianceIsRed ? 1 : -1) * 16, 0, 3, flywheelRunning);
+                encoderDrive(DRIVE_POWER, -15, 0, 0, 3, flywheelRunning);
+                encoderDrive(DRIVE_POWER, 0,0, (allianceIsRed ? 1 : -1) * 10, 3, flywheelRunning);
+                encoderDrive(DRIVE_POWER, 0, (allianceIsRed ? 1 : -1) * 16, 0, 3, flywheelRunning);
                 blocker.setPower(-1.0);
                 intake.setPower(0.7);
                 encoderDrive(0.6, 33, 0, 0, 2, flywheelRunning);
                 intake.setPower(0.0);
                 blocker.setPower(0.0);
                 flywheelRunning = true;
-                encoderDrive(0.6, -33, 0, 0, 3, flywheelRunning);
-                encoderDrive(0.6, 0, (allianceIsRed ? -1 : 1) * 16, 0, 3, flywheelRunning);
-                encoderDrive(0.6, 0, 0, (allianceIsRed ? -1 : 1) * 10, 3, flywheelRunning);
-                encoderDrive(0.6, 18, 0, 0, 3, flywheelRunning);
+                encoderDrive(DRIVE_POWER, -33, 0, 0, 3, flywheelRunning);
+                encoderDrive(DRIVE_POWER, 0, (allianceIsRed ? -1 : 1) * 16, 0, 3, flywheelRunning);
+                encoderDrive(DRIVE_POWER, 0, 0, (allianceIsRed ? -1 : 1) * 10, 3, flywheelRunning);
+                encoderDrive(DRIVE_POWER, 18, 0, 0, 3, flywheelRunning);
                 autoProgress = 4;
-            } else if(panicTime.seconds() < 26 && autoProgress == 4 && launcher.getVelocity() > 900) {
+            } else if(panicTime.seconds() < PANIC_AT && autoProgress == 4 && launcher.getVelocity() > 900) {
                 autoProgress = 5;
                 intake.setPower(1.0);
                 blocker.setPower(1.0);
                 blocker2.setPosition(0.0);
                 startedAt = runtime.milliseconds();
-            } else if((panicTime.seconds() >= 26 && autoProgress < 100) || (autoProgress == 5 && (runtime.milliseconds() - startedAt) > 5000)) {
+            } else if((panicTime.seconds() >= PANIC_AT && autoProgress < 100) || (autoProgress == 5 && (runtime.milliseconds() - startedAt) > 5000)) {
                 autoProgress = 99999;
                 intake.setPower(0.0);
                 blocker.setPower(0.0);
                 blocker2.setPosition(0.8);
                 flywheelRunning = false;
-                encoderDrive(0.6, -12, (allianceIsRed ? -1 : 1) * 12, 0, 3, flywheelRunning);
+                encoderDrive(DRIVE_POWER, -12, (allianceIsRed ? -1 : 1) * 12, 0, 3, flywheelRunning);
             }
 
             // Show the elapsed game time and wheel power.
